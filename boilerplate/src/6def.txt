@@ -1,0 +1,42 @@
+
+---
+
+### Defect 1
+* **Defect ID:** D1
+* **Class.Method:** `Wallet.Wallet`
+* **Description:** The constructor `Wallet(double balance)` does not validate the initial balance parameter. It allows creating a wallet with a negative balance (e.g., `-100.0`) without throwing an `InvalidAmountException`, violating data integrity.
+
+---
+
+### Defect 2
+* **Defect ID:** D2
+* **Class.Method:** `Wallet.addFunds`
+* **Description:** The method accepts `Double.POSITIVE_INFINITY` because `Double.POSITIVE_INFINITY > 0` evaluates to `true` in Java. There is no check using `Double.isInfinite()`, which sets the wallet balance to `Infinity` and corrupts all subsequent financial operations.
+
+---
+
+### Defect 3
+* **Defect ID:** D3
+* **Class.Method:** `Wallet.transferFunds`
+* **Description:** The method does not perform input validation on the destination parameter `toWallet`. Passing a `null` recipient results in an unhandled runtime `NullPointerException` instead of cleanly rejecting the invalid argument with an `IllegalArgumentException`.
+
+---
+
+### Defect 4
+* **Defect ID:** D4
+* **Class.Method:** `Wallet.transferFunds`
+* **Description:** Funds are deducted from the sender (`this.deductFunds(amount)`) before verifying if the recipient wallet is `null`. When `toWallet` is `null`, a `NullPointerException` is thrown after deduction and the transaction is never rolled back, causing permanent loss of funds from the sender's wallet.
+
+---
+
+### Defect 5
+* **Defect ID:** D5
+* **Class.Method:** `Wallet.transferFunds`
+* **Description:** The method does not check if the destination wallet is the same instance as the source wallet (`toWallet == this`). As a result, transferring money to oneself is permitted instead of being rejected with an `IllegalArgumentException`.
+
+---
+
+### Defect 6
+* **Defect ID:** D6
+* **Class.Method:** `Wallet.transferFunds`
+* **Description:** The method evaluates balance availability (`balance >= amount`) before validating whether the recipient wallet parameter is `null`. When a transfer exceeds the balance and has a `null` recipient, it throws `InsufficientFundsException` instead of checking and rejecting the invalid `null` argument first with an `IllegalArgumentException`.
